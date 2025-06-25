@@ -1,13 +1,29 @@
 import requests
-
-# Esse script é só pra testar a comunicação com o servidor que criamos
-# Ele envia uma pergunta pro servidor e mostra a resposta que voltar
+import json
 
 mensagem = input("Digite sua pergunta: ")
 
-resposta = requests.post("http://localhost:8000/chat", json={
-    "type": "message",
-    "content": mensagem
-})
+payload = {
+    "type": "chat.completion",
+    "messages": [
+        {"role": "user", "content": mensagem}
+    ],
+    "functions": [
+        {
+            "name": "somar",
+            "description": "Soma dois números inteiros",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "a": {"type": "integer"},
+                    "b": {"type": "integer"}
+                },
+                "required": ["a", "b"]
+            }
+        }
+    ]
+}
 
-print("Resposta:", resposta.json())
+resposta = requests.post("http://localhost:8000/chat", json=payload)
+
+print("Resposta:", json.dumps(resposta.json(), indent=2, ensure_ascii=False))

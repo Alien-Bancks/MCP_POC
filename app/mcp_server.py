@@ -1,37 +1,34 @@
 from fastapi import FastAPI, Request
 from app.model_loader import ask_model  
-from app.function_registry import functions  # Dicionário com as funções disponíveis
+from app.function_registry import functions, function_schemas  
 import json
 
 app = FastAPI()
 
-# Essa rota vai receber as mensagens do cliente, tipo um chatbot
 @app.post("/chat")
 async def chat(request: Request):
     data = await request.json()
 
-    # Verifica se está no formato esperado
-    if data.get("type") != "message" or "content" not in data:
+    if data.get("type") != "chat.completion" or "messages" not in data:
         return {
             "type": "error",
-            "content": "Formato inválido. Esperado: { type: 'message', content: 'texto aqui' }"
+            "content": "Formato inválido. Esperado: { type: 'chat.completion', messages: [...], functions: [...] }"
         }
 
-    # Pega o texto enviado
-    prompt = data["content"]
+    messages = data["messages"]
+    functions_input = data.get("functions", function_schemas)  # Usa o padrão se não mandarem
 
-    # Aqui o modelo responde com algum texto
-    resposta = ask_model(prompt)
+    # Envia tudo pro modelo e pega a resposta
+    resposta = ask_model(messages=messages, functions=functions_input)
 
-    # Se a IA responder com algo do tipo: CALL: { "function": "...", "args": {...} }
-    if resposta.startswith("CALL:"):
+    # Se a IA quiser chamar uma função
+    if "function_call" in resposta:
         try:
-            # Remove o prefixo e converte pra dicionário Python
-            chamada = json.loads(resposta.replace("CALL:", "").strip())
-            nome_funcao = chamada.get("function")
-            argumentos = chamada.get("args", {})
+            nome_funcao = resposta["function_call"]["name"]
+            argumentos_raw = resposta["function_call"]["arguments"]
+            argumentos = json.loads(argumentos_raw)
 
-            # Verifica se a função realmente existe no nosso dicionário
+            # Executa a função se estiver registrada
             if nome_funcao in functions:
                 resultado = functions[nome_funcao](**argumentos)
                 return {
@@ -50,8 +47,8 @@ async def chat(request: Request):
                 "content": f"Erro ao executar a função: {str(erro)}"
             }
 
-    # Caso seja só uma resposta normal do modelo, devolve assim mesmo
+    # Se for só uma resposta normal
     return {
         "type": "response",
-        "content": resposta
+        "content": resposta.get("content", "")
     }
