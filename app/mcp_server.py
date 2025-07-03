@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
-from app.model_loader import ask_model  
-from app.function_registry import functions, function_schemas  
+from app.model_loader import ask_model
 import json
 
 app = FastAPI()
@@ -16,39 +15,22 @@ async def chat(request: Request):
         }
 
     messages = data["messages"]
-    functions_input = data.get("functions", function_schemas)  # Usa o padrão se não mandarem
+    functions = data.get("functions", [])
 
-    # Envia tudo pro modelo e pega a resposta
-    resposta = ask_model(messages=messages, functions=functions_input)
+    resposta = ask_model(messages=messages, functions=functions)
+    message = resposta.get("choices", [{}])[0].get("message", {})
 
-    # Se a IA quiser chamar uma função
-    if "function_call" in resposta:
-        try:
-            nome_funcao = resposta["function_call"]["name"]
-            argumentos_raw = resposta["function_call"]["arguments"]
-            argumentos = json.loads(argumentos_raw)
+    if "function_call" in message:
+        return {
+            "type": "function_call",
+            "function_call": message["function_call"]
+        }
 
-            # Executa a função se estiver registrada
-            if nome_funcao in functions:
-                resultado = functions[nome_funcao](**argumentos)
-                return {
-                    "type": "function_result",
-                    "content": str(resultado)
-                }
-            else:
-                return {
-                    "type": "error",
-                    "content": f"A função '{nome_funcao}' não foi encontrada."
-                }
-
-        except Exception as erro:
-            return {
-                "type": "error",
-                "content": f"Erro ao executar a função: {str(erro)}"
-            }
-
-    # Se for só uma resposta normal
     return {
-        "type": "response",
-        "content": resposta.get("content", "")
+        "type": "chat.completion",
+        "content": message.get("content", "")
     }
+
+@app.get("/")
+async def root():
+    return {"message": "Servidor rodando. Use o endpoint /chat para interagir."}

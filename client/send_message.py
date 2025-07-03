@@ -10,20 +10,29 @@ payload = {
     ],
     "functions": [
         {
-            "name": "somar",
-            "description": "Soma dois números inteiros",
+            "name": "obter_previsao_tempo",
+            "description": "Retorna a previsão do tempo para uma cidade.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "a": {"type": "integer"},
-                    "b": {"type": "integer"}
+                    "cidade": {
+                        "type": "string",
+                        "description": "nome da cidade"
+                    },
+                    "estado": {
+                        "type": "string",
+                        "description": "sigla do estado"
+                    }
                 },
-                "required": ["a", "b"]
+                "required": ["cidade", "estado"]
             }
         }
     ]
 }
 
+
+
 resposta = requests.post("http://localhost:8000/chat", json=payload)
 
-print("Resposta:", json.dumps(resposta.json(), indent=2, ensure_ascii=False))
+print("\nResposta:\n")
+print(json.dumps(resposta.json(), indent=2, ensure_ascii=False))
