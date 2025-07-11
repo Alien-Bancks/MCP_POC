@@ -1,28 +1,19 @@
 # PoC: Comunicação com IA local via MCP e Function Calling
 
-Este projeto é uma **prova de conceito (PoC)** que demonstra como se comunicar com um modelo de IA local (Phi-3 Mini) usando o protocolo **MCP (Model Context Protocol)**, incluindo suporte real à funcionalidade de **Function Calling**, seguindo o padrão oficial usado por APIs como a da OpenAI.
+Este projeto é uma **prova de conceito (PoC)** que demonstra como se comunicar com um modelo de IA local (Phi-3 Mini) usando o protocolo 
 
 ---
 
-## O que esta PoC mostra:
-
-- Como um cliente envia mensagens no formato MCP  
-- Como um servidor FastAPI interpreta essas mensagens  
-- Como o modelo Phi-3 Mini responde com texto direto ou `function_call`  
-- Como detectar chamadas de função (`function_call`) e tratá-las  
-- Como manter separação entre camada de IA e lógica de execução  
-
----
 
 ## Estrutura do Projeto
 
 ```
-poc-mcp/
+mcp_poc/
 ├── app/
-│   ├── mcp_server.py        # Servidor FastAPI que lida com mensagens MCP
+│   ├── server.py        
 │   └── model_loader.py      # Integração com o modelo Phi-3 local
 ├── client/
-│   └── send_message.py      # Cliente simples que envia mensagens
+│   └── client.py      # Cliente simples que envia mensagens
 ├── models/
 │   └── phi-3-mini.gguf      # (você deve baixar e colocar aqui)
 ├── requirements.txt
@@ -32,9 +23,9 @@ poc-mcp/
 ## Requisitos
 
 - Python 3.8+
-- FastAPI
 - llama-cpp-python
 - Modelo `.gguf` do Phi-3 Mini
+- MCP client
 
 ---
 
@@ -43,8 +34,8 @@ poc-mcp/
 ### 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/Alien-Bancks/mcp-function-calling-poc.git
-cd poc-mcp
+git clone https://github.com/Alien-Bancks/MCP_POC.git
+cd MCP_POC
 ```
 
 ### 2. (Recomendado) Crie e ative um ambiente virtual:
