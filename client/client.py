@@ -1,19 +1,10 @@
 import asyncio
 from fastmcp import Client
 from fastmcp.client.logging import LogMessage
+from app.model_loader import decide_tool
 
 
 client = Client("/home/work02/Documentos/Aline/IA/MCP_POC/app/server.py")
-
-# config = {
-#     "local_server":{
-#         "transport": "stdio",
-#         "command": "python",
-#         "args": ["../server.py", "--verbose"],
-#         "env": {"DEBUG": "true"},
-#         "cwd": "/home/work02/Documentos/Aline/IA/MCP_POC/app/server.py",
-#     }
-# }
 
 
 async def main():
@@ -28,27 +19,30 @@ async def main():
                 print(f" {tool.name}: {tool.description}") 
         else: 
             print("No tools available.") 
- 
+
+
+        user_input = input("Digite sua pergunta: ")
+        try:
+            tool, args = decide_tool(user_input)
+        except ValueError as e:
+            print("Erro ao decidir tool:", e)
+            return
 
         try:
-            result = await client.call_tool("somar", {"a": 5, "b": 7})
+            result = await client.call_tool(tool, args)
             if hasattr(result, "data"):
-                print("Result of the tool 'somar':", result.data)
+                print(f"Result of the tool '{tool}':", result.data)
             else:
-                print("Result of the tool 'somar':", result)
+                print(f"Result of the tool '{tool}':", result)
         except Exception as e:
-            print("Error executing the tool 'somar':", str(e))
+            print(f"Error executing the tool '{tool}':", str(e))
 
         async def log_handler(message: LogMessage):
             print(f"Server log: {message.data}")
 
         async def progress_handler(progress: float, total: float | None, message: str | None):
-            print(f"Progress: {progress}/{total} - {message}")        
-
+            print(f"Progress: {progress}/{total} - {message}")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-    

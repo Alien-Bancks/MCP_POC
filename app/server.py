@@ -4,13 +4,11 @@ mcp = FastMCP("mcp")
 
 @mcp.tool()
 def somar(a: int, b: int) -> int:
-    """Soma dois números"""
     return a + b
 
 @mcp.tool()
 def subtrair(a: int, b: int) -> int:
-    """Subtrai dois números"""
-    return a - b    
+    return a - b
 
 
 @mcp.resource("frase://batata-doce")
