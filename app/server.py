@@ -2,6 +2,7 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("mcp")
 
+
 @mcp.tool()
 def somar(a: int, b: int) -> int:
     return a + b
@@ -10,11 +11,22 @@ def somar(a: int, b: int) -> int:
 def subtrair(a: int, b: int) -> int:
     return a - b
 
+@mcp.tool()
+def multiplicar(a: int, b: int) -> int:
+    return a * b
+
+@mcp.tool()
+def dividir(a: int, b: int) -> float:
+    if b == 0:
+        raise ValueError("Não é possível dividir por zero.")
+    return a / b
+
 
 @mcp.resource("frase://batata-doce")
-def receita() -> str: 
+def receita() -> str:
     """Retorna uma frase sobre batata doce"""
     return "Para fazer batata doce: asse no forno com azeite por 40 minutos."
+
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")

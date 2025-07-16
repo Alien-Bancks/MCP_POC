@@ -1,11 +1,11 @@
 import asyncio
 from fastmcp import Client
 from fastmcp.client.logging import LogMessage
-from app.model_loader import decide_tool
+from app.model_loader import decide_tool  
 
+SERVER_PATH = "/home/work02/Documentos/Aline/IA/MCP_POC/app/server.py"
 
-client = Client("/home/work02/Documentos/Aline/IA/MCP_POC/app/server.py")
-
+client = Client(SERVER_PATH)
 
 async def main():
     async with client:
@@ -16,12 +16,13 @@ async def main():
         if tools:
             print("Available tools:")
             for tool in tools:
-                print(f" {tool.name}: {tool.description}") 
-        else: 
-            print("No tools available.") 
-
+                print(f" {tool.name}: {tool.description}")
+        else:
+            print("No tools available.")
 
         user_input = input("Digite sua pergunta: ")
+
+      
         try:
             tool, args = decide_tool(user_input)
         except ValueError as e:
@@ -42,7 +43,6 @@ async def main():
 
         async def progress_handler(progress: float, total: float | None, message: str | None):
             print(f"Progress: {progress}/{total} - {message}")
-
 
 if __name__ == "__main__":
     asyncio.run(main())
