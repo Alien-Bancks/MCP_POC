@@ -4,23 +4,6 @@ Prova de conceito que demonstra como comunicar-se com um modelo de IA local usan
 
 ---
 
-## Estrutura do projeto
-
-mcp_poc/
-├── app/
-│ ├── server.py 
-│ └── model_loader.py 
-├── client/
-│ └── client.py 
-├── models/
-│ └── phi-3-mini.gguf 
-├── requirements.txt 
-
-yaml
-Copy
-Edit
-
----
 
 ## Requisitos
 
