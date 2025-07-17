@@ -20,14 +20,19 @@ async def main():
         else:
             print("No tools available.")
 
-        user_input = input("Digite sua pergunta: ")
+        user_input = input("Digite sua pergunta ou caminho do áudio (.ogg/.wav): ")
+
+        if user_input.endswith(".ogg") or user_input.endswith(".wav"):
+            tool = "transcrever_audio"
+            args = {"path": user_input}
+        else:
 
       
-        try:
-            tool, args = decide_tool(user_input)
-        except ValueError as e:
-            print("Erro ao decidir tool:", e)
-            return
+            try:
+                tool, args = decide_tool(user_input)
+            except ValueError as e:
+                print("Erro ao decidir tool:", e)
+                return
 
         try:
             result = await client.call_tool(tool, args)

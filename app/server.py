@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+import whisper
 
 mcp = FastMCP("mcp")
 
@@ -21,11 +22,15 @@ def dividir(a: int, b: int) -> float:
         raise ValueError("Não é possível dividir por zero.")
     return a / b
 
+@mcp.tool()
+def transcrever_audio(path: str) -> str:
+    """
+    Transcreve o áudio (ogg/wav) para texto usando Whisper.
+    """
+    model = whisper.load_model("medium")
+    result = model.transcribe(path, language="pt")
+    return result["text"]
 
-@mcp.resource("frase://batata-doce")
-def receita() -> str:
-    """Retorna uma frase sobre batata doce"""
-    return "Para fazer batata doce: asse no forno com azeite por 40 minutos."
 
 
 if __name__ == "__main__":
