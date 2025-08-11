@@ -23,7 +23,7 @@ async def main():
         user_input = input("Digite sua pergunta ou caminho do áudio (.ogg/.wav): ")
 
         if user_input.endswith(".ogg") or user_input.endswith(".wav"):
-            tool = "transcrever_audio"
+            tool = "transcrever_audio" 
             args = {"path": user_input}
         else:
 
